@@ -42,8 +42,21 @@ func try_remove():
 	front_ray.force_raycast_update()
 	back_ray.force_raycast_update()
 	
-	var can_move_front = not front_ray.is_colliding()
-	var can_move_back = not back_ray.is_colliding()
+	if front_ray.is_colliding():
+		var front_pos = front_ray.get_collision_point()
+		
+		if front_pos.distance_to(front_ray.global_position) > 0.9:
+			move_distance = round(front_pos.distance_to(front_ray.global_position))
+			move_pipe(move_direction)
+			return
+	if back_ray.is_colliding():
+		var back_pos = back_ray.get_collision_point()
+		
+		if back_pos.distance_to(back_ray.global_position) > 0.9:
+			move_distance = round(back_pos.distance_to(back_ray.global_position))
+			move_pipe(-move_direction)
+			return
+	shake_pipe()
 	
 	print("Front Ray Colliding: ", front_ray.is_colliding())
 	print("Back Ray Colliding: ", back_ray.is_colliding())
@@ -53,13 +66,6 @@ func try_remove():
 		print("Front Collider: ", front_ray.get_collider().name)
 	if back_ray.is_colliding():
 		print("Back Collider: ", back_ray.get_collider().name)
-	
-	if can_move_front:
-		move_pipe(move_direction)
-	elif can_move_back:
-		move_pipe(-move_direction)
-	else:
-		shake_pipe()
 
 func move_pipe(direction: Vector3):
 	if is_moving: 
@@ -67,6 +73,7 @@ func move_pipe(direction: Vector3):
 	
 	print("Moving Direction: ", direction)  # Debug
 	is_moving = true
+	
 	var target_position = global_position + (direction * move_distance)
 	print("Target Position: ", target_position)  # Debug
 	
