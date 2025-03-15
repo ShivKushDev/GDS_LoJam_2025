@@ -45,6 +45,11 @@ func try_remove():
 	if front_ray.is_colliding():
 		var front_pos = front_ray.get_collision_point()
 		
+		if front_ray.get_collider().get_parent().get_parent().name == "Exit":
+			move_distance = round(front_pos.distance_to(front_ray.global_position)) + 1
+			move_pipe(move_direction)
+			return
+		
 		if front_pos.distance_to(front_ray.global_position) > 0.9:
 			move_distance = round(front_pos.distance_to(front_ray.global_position))
 			move_pipe(move_direction)
@@ -52,30 +57,24 @@ func try_remove():
 	if back_ray.is_colliding():
 		var back_pos = back_ray.get_collision_point()
 		
+		if back_ray.get_collider().get_parent().get_parent().name == "Exit":
+			move_distance = round(back_pos.distance_to(back_ray.global_position)) + 1
+			move_pipe(move_direction)
+			return
+		
 		if back_pos.distance_to(back_ray.global_position) > 0.9:
 			move_distance = round(back_pos.distance_to(back_ray.global_position))
 			move_pipe(-move_direction)
 			return
 	shake_pipe()
-	
-	print("Front Ray Colliding: ", front_ray.is_colliding())
-	print("Back Ray Colliding: ", back_ray.is_colliding())
-	
-	# Debug colliders
-	if front_ray.is_colliding():
-		print("Front Collider: ", front_ray.get_collider().name)
-	if back_ray.is_colliding():
-		print("Back Collider: ", back_ray.get_collider().name)
 
 func move_pipe(direction: Vector3):
 	if is_moving: 
 		return
-	
-	print("Moving Direction: ", direction)  # Debug
+
 	is_moving = true
 	
 	var target_position = global_position + (direction * move_distance)
-	print("Target Position: ", target_position)  # Debug
 	
 	var tween = create_tween().set_trans(Tween.TRANS_QUINT).set_ease(Tween.EASE_OUT)
 	tween.tween_property(self, "global_position", target_position, move_speed)
